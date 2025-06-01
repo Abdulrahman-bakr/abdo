@@ -1,0 +1,677 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>متجر اكسسوارات الموبايل</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#10B981', // Emerald-500
+            'primary-hover': '#059669', // Emerald-600
+            secondary: '#3B82F6', // Blue-500
+            'secondary-hover': '#2563EB', // Blue-600
+            dark: {
+              900: '#111827', // Gray-900
+              800: '#1F2937', // Gray-800
+              700: '#374151', // Gray-700
+            },
+            light: {
+              100: '#F3F4F6', // Gray-100
+              200: '#E5E7EB', // Gray-200
+            }
+          },
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'], // Example Arabic font
+          },
+          animation: {
+            'fade-in-up': 'fadeInUp 0.5s ease-out',
+            'subtle-pulse': 'subtlePulse 2s infinite ease-in-out',
+            'slide-in-left': 'slideInLeft 0.5s ease-out forwards',
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            subtlePulse: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '.7' },
+            },
+            slideInLeft: {
+              '0%': { transform: 'translateX(-100%)', opacity: '0' },
+              '100%': { transform: 'translateX(0)', opacity: '1' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/client": "https://esm.sh/react-dom@^19.1.0/client",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/"
+  }
+}
+</script>
+</head>
+<body class="bg-dark-900 text-light-100">
+  <div id="root"></div>
+  <script type="module">
+    import React, { useState, useEffect } from "react";
+    import ReactDOM from "react-dom/client";
+
+    // --- START Inlined types.ts (converted/simplified for JS) ---
+    const ProductCategory = {
+      All: "All",
+      Chargers: "Chargers",
+      Cables: "Cables",
+      FlashDrives: "FlashDrives",
+      Keyboards: "Keyboards",
+      BluetoothHeadphones: "BluetoothHeadphones",
+      WiredHeadphones: "WiredHeadphones",
+      ComputerSpeakers: "ComputerSpeakers",
+      MobileCases: "MobileCases",
+      Mice: "Mice",
+      Other: "OtherAccessories",
+    };
+    // --- END Inlined types.ts ---
+
+    // --- START Inlined constants.ts ---
+    const CATEGORIES = [
+      { id: ProductCategory.All, arabicName: "الكل" },
+      { id: ProductCategory.Chargers, arabicName: "شواحن" },
+      { id: ProductCategory.Cables, arabicName: "وصلات" },
+      { id: ProductCategory.FlashDrives, arabicName: "فلاشات" },
+      { id: ProductCategory.Keyboards, arabicName: "لوحة مفاتيح" },
+      { id: ProductCategory.BluetoothHeadphones, arabicName: "سماعات بلوتوث" },
+      { id: ProductCategory.WiredHeadphones, arabicName: "سماعات سلكية" },
+      { id: ProductCategory.ComputerSpeakers, arabicName: "سماعات كمبيوتر" },
+      { id: ProductCategory.MobileCases, arabicName: "جرابات موبايل" },
+      { id: ProductCategory.Mice, arabicName: "ماوس" },
+      { id: ProductCategory.Other, arabicName: "اكسسوارات أخرى" },
+    ];
+
+    const SAMPLE_PRODUCTS = [
+      {
+        id: "1",
+        name: "Fast Charger Pro",
+        arabicName: "شاحن سريع برو",
+        category: ProductCategory.Chargers,
+        price: 120,
+        imageUrl: "https://picsum.photos/seed/charger1/400/300",
+        rating: 4.5,
+        reviews: 150,
+        isNew: true,
+      },
+      {
+        id: "2",
+        name: "USB-C Cable Nylon Braided",
+        arabicName: "كابل USB-C نايلون مجدول",
+        category: ProductCategory.Cables,
+        price: 60,
+        imageUrl: "https://picsum.photos/seed/cable1/400/300",
+        rating: 4.2,
+        reviews: 90,
+      },
+      {
+        id: "3",
+        name: "128GB Flash Drive",
+        arabicName: "فلاش ميموري 128 جيجا",
+        category: ProductCategory.FlashDrives,
+        price: 150,
+        imageUrl: "https://picsum.photos/seed/flash1/400/300",
+        rating: 4.8,
+        reviews: 200,
+        discountPrice: 130,
+      },
+      {
+        id: "4",
+        name: "Mechanical Gaming Keyboard",
+        arabicName: "لوحة مفاتيح ميكانيكية للألعاب",
+        category: ProductCategory.Keyboards,
+        price: 350,
+        imageUrl: "https://picsum.photos/seed/keyboard1/400/300",
+        rating: 4.7,
+        reviews: 120,
+      },
+      {
+        id: "5",
+        name: "Noise Cancelling Bluetooth Headphones",
+        arabicName: "سماعات بلوتوث عازلة للضوضاء",
+        category: ProductCategory.BluetoothHeadphones,
+        price: 450,
+        imageUrl: "https://picsum.photos/seed/btheadphones1/400/300",
+        rating: 4.9,
+        reviews: 300,
+        isNew: true,
+      },
+      {
+        id: "6",
+        name: "In-Ear Wired Headphones",
+        arabicName: "سماعات سلكية داخل الأذن",
+        category: ProductCategory.WiredHeadphones,
+        price: 80,
+        imageUrl: "https://picsum.photos/seed/wiredheadphones1/400/300",
+        rating: 4.0,
+        reviews: 75,
+      },
+      {
+        id: "7",
+        name: "2.1 Computer Speakers",
+        arabicName: "سماعات كمبيوتر 2.1",
+        category: ProductCategory.ComputerSpeakers,
+        price: 280,
+        imageUrl: "https://picsum.photos/seed/speakers1/400/300",
+        rating: 4.3,
+        reviews: 60,
+      },
+      {
+        id: "8",
+        name: "Silicone Mobile Case iPhone 15",
+        arabicName: "جراب سيليكون لآيفون 15",
+        category: ProductCategory.MobileCases,
+        price: 90,
+        imageUrl: "https://picsum.photos/seed/case1/400/300",
+        rating: 4.6,
+        reviews: 180,
+        discountPrice: 75,
+      },
+      {
+        id: "9",
+        name: "Wireless Ergonomic Mouse",
+        arabicName: "ماوس لاسلكي مريح",
+        category: ProductCategory.Mice,
+        price: 180,
+        imageUrl: "https://picsum.photos/seed/mouse1/400/300",
+        rating: 4.4,
+        reviews: 110,
+      },
+      {
+        id: "10",
+        name: "Universal Phone Holder",
+        arabicName: "حامل هاتف عالمي",
+        category: ProductCategory.Other,
+        price: 70,
+        imageUrl: "https://picsum.photos/seed/holder1/400/300",
+        rating: 4.1,
+        reviews: 50,
+        isNew: true,
+      },
+      {
+        id: "11",
+        name: "Power Bank 10000mAh",
+        arabicName: "باور بانك 10000 مللي أمبير",
+        category: ProductCategory.Chargers,
+        price: 200,
+        imageUrl: "https://picsum.photos/seed/powerbank1/400/300",
+        rating: 4.7,
+        reviews: 220,
+      },
+      {
+        id: "12",
+        name: "HDMI Cable 2M",
+        arabicName: "كابل HDMI طول 2 متر",
+        category: ProductCategory.Cables,
+        price: 95,
+        imageUrl: "https://picsum.photos/seed/hdmicable/400/300",
+        rating: 4.3,
+        reviews: 85,
+      }
+    ];
+    // --- END Inlined constants.ts ---
+
+    // --- START Inlined components/icons/ShoppingCartIcon.tsx ---
+    const ShoppingCartIcon = ({ className }) => {
+      return (
+        React.createElement("svg", {
+          xmlns: "http://www.w3.org/2000/svg",
+          fill: "none",
+          viewBox: "0 0 24 24",
+          strokeWidth: 1.5,
+          stroke: "currentColor",
+          className: className || "w-6 h-6"
+        }, React.createElement("path", {
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          d: "M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+        }))
+      );
+    };
+    // --- END Inlined components/icons/ShoppingCartIcon.tsx ---
+
+    // --- START Inlined components/icons/StarIcon.tsx ---
+    const StarIcon = ({ filled, className }) => {
+      return (
+        React.createElement("svg", {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "0 0 24 24",
+          fill: filled ? "currentColor" : "none",
+          stroke: "currentColor",
+          strokeWidth: filled ? 0 : 1.5,
+          className: className || "w-5 h-5 text-yellow-400"
+        }, React.createElement("path", {
+          strokeLinecap: "round",
+          strokeLinejoin: "round",
+          d: "M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.479.038.674.656.317.942l-4.006 3.512a.563.563 0 0 0-.162.522l1.26 5.33c.127.538-.431.966-.904.664l-4.859-2.966a.562.562 0 0 0-.546 0l-4.859 2.966c-.473.302-1.031-.126-.904-.664l1.26-5.33a.563.563 0 0 0-.162-.522l-4.006-3.512c-.357-.286-.162-.904.317-.942l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+        }))
+      );
+    };
+    // --- END Inlined components/icons/StarIcon.tsx ---
+    
+    // --- START Inlined components/icons/WhatsAppIcon.tsx ---
+    const WhatsAppIcon = ({ className }) => {
+      return (
+        React.createElement("svg", {
+          xmlns: "http://www.w3.org/2000/svg",
+          viewBox: "0 0 24 24",
+          fill: "currentColor",
+          className: className || "w-6 h-6",
+          "aria-hidden": "true"
+        }, React.createElement("path", {
+          d: "M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.33 3.43 16.79L2 22L7.32 20.58C8.72 21.33 10.34 21.78 12.04 21.78C17.5 21.78 21.95 17.33 21.95 11.87C21.95 6.41 17.5 2 12.04 2ZM12.04 20.13C10.56 20.13 9.13 19.74 7.91 19.02L7.53 18.79L4.32 19.58L5.14 16.46L4.89 16.07C4.08 14.78 3.66 13.28 3.66 11.76C3.66 7.36 7.42 3.64 12.04 3.64C16.66 3.64 20.42 7.36 20.42 11.91C20.42 16.47 16.66 20.13 12.04 20.13ZM17.01 14.6C16.76 14.48 15.54 13.9 15.31 13.81C15.08 13.72 14.91 13.68 14.75 13.93C14.59 14.18 14.08 14.75 13.93 14.91C13.77 15.08 13.62 15.1 13.37 14.98C13.12 14.86 12.13 14.53 10.97 13.5C10.05 12.69 9.47 11.71 9.32 11.46C9.16 11.21 9.28 11.08 9.41 10.95C9.52 10.84 9.66 10.66 9.79 10.5C9.91 10.34 9.96 10.23 10.07 10.02C10.19 9.81 10.13 9.64 10.05 9.49C9.96 9.34 9.44 8.06 9.21 7.52C8.99 7 8.76 7.04 8.6 7.03C8.45 7.03 8.28 7.03 8.12 7.03C7.96 7.03 7.71 7.09 7.49 7.34C7.27 7.59 6.77 8.07 6.77 9.12C6.77 10.17 7.52 11.15 7.64 11.31C7.77 11.47 9.18 13.72 11.41 14.62C12.09 14.9 12.59 15.05 12.98 15.14C13.51 15.26 13.97 15.23 14.32 15.17C14.72 15.09 15.73 14.49 15.94 14.24C16.15 13.99 16.15 13.79 16.1 13.68C16.04 13.57 15.89 13.51 15.73 13.43C15.56 13.34 15.4 13.3 15.23 13.21C15.06 13.12 14.89 13.06 14.75 13.06C14.61 13.06 14.47 13.12 14.34 13.24L14.34 13.24C17.26 14.75 17.13 14.71 17.01 14.6Z"
+        }))
+      );
+    };
+    // --- END Inlined components/icons/WhatsAppIcon.tsx ---
+
+    // --- START Inlined components/StarRating.tsx ---
+    const StarRating = ({ rating, totalStars = 5, className }) => {
+      return (
+        React.createElement("div", { className: "flex items-center " + (className || "") },
+          [...Array(totalStars)].map((_, index) => {
+            const starValue = index + 1;
+            return (
+              React.createElement(StarIcon, {
+                key: index,
+                filled: starValue <= rating,
+                className: "w-4 h-4 sm:w-5 sm:h-5 text-yellow-400"
+              })
+            );
+          })
+        )
+      );
+    };
+    // --- END Inlined components/StarRating.tsx ---
+
+    // --- START Inlined components/Header.tsx ---
+    const Header = () => {
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => {
+          setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const navLinks = [
+        { name: 'الرئيسية', href: '#' },
+        { name: 'المنتجات', href: '#products' },
+        { name: 'عروض خاصة', href: '#promo' },
+        { name: 'اتصل بنا', href: '#footer' },
+      ];
+
+      return (
+        React.createElement("header", {
+          className: "fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out " + 
+                     (isScrolled ? 'bg-dark-800/90 shadow-lg backdrop-blur-md' : 'bg-transparent')
+        },
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8" },
+            React.createElement("div", { className: "flex items-center justify-between h-16 sm:h-20" },
+              React.createElement("div", { className: "flex items-center" },
+                React.createElement("a", { href: "#", className: "text-2xl sm:text-3xl font-bold text-primary" }, "اكسسواراتي")
+              ),
+              React.createElement("nav", { className: "hidden md:flex space-x-reverse space-x-6 lg:space-x-8" },
+                navLinks.map((link) => (
+                  React.createElement("a", {
+                    key: link.name,
+                    href: link.href,
+                    className: "text-light-100 hover:text-primary transition-colors duration-200 text-sm lg:text-base font-medium"
+                  }, link.name)
+                ))
+              ),
+              React.createElement("div", { className: "flex items-center space-x-3 sm:space-x-4" },
+                React.createElement("button", { "aria-label": "Search", className: "text-light-100 hover:text-primary transition-colors duration-200" },
+                  React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: "w-5 h-5 sm:w-6 sm:h-6" },
+                    React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" })
+                  )
+                ),
+                React.createElement("a", { href: "#cart", className: "relative text-light-100 hover:text-primary transition-colors duration-200" }, // Changed href for clarity
+                  React.createElement(ShoppingCartIcon, { className: "w-5 h-5 sm:w-6 sm:h-6" }),
+                  React.createElement("span", { className: "absolute -top-1 -right-1 bg-secondary text-white text-xs rounded-full px-1.5 py-0.5" }, "3")
+                ),
+                React.createElement("div", { className: "md:hidden" },
+                  React.createElement("button", {
+                    onClick: () => setMobileMenuOpen(!mobileMenuOpen),
+                    className: "text-light-100 hover:text-primary transition-colors duration-200",
+                    "aria-label": "Open menu"
+                  },
+                    React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", strokeWidth: 1.5, stroke: "currentColor", className: "w-6 h-6" },
+                      React.createElement("path", { strokeLinecap: "round", strokeLinejoin: "round", d: "M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" })
+                    )
+                  )
+                )
+              )
+            )
+          ),
+          mobileMenuOpen && (
+            React.createElement("div", { className: "md:hidden bg-dark-800/95 backdrop-blur-md absolute top-full left-0 right-0 shadow-lg animate-slide-in-left" },
+              React.createElement("nav", { className: "flex flex-col items-center space-y-4 py-4" },
+                navLinks.map((link) => (
+                  React.createElement("a", {
+                    key: link.name,
+                    href: link.href,
+                    onClick: () => setMobileMenuOpen(false),
+                    className: "text-light-100 hover:text-primary transition-colors duration-200 py-2 text-lg"
+                  }, link.name)
+                ))
+              )
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/Header.tsx ---
+
+    // --- START Inlined components/HeroSection.tsx ---
+    const HeroSection = () => {
+      return (
+        React.createElement("section", {
+          className: "min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-900 via-dark-800 to-dark-700 text-light-100 py-20 pt-32 sm:pt-20 relative overflow-hidden"
+        },
+          React.createElement("div", { className: "absolute inset-0 opacity-10" },
+            React.createElement("img", { src: "https://picsum.photos/seed/hero-bg/1920/1080", alt: "Background", className: "w-full h-full object-cover" })
+          ),
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10" },
+            React.createElement("h1", {
+              className: "text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 animate-fade-in-up",
+              style: { animationDelay: '0.2s' }
+            },
+              React.createElement("span", { className: "bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary" }, "أحدث اكسسوارات"), " الموبايل بين يديك"
+            ),
+            React.createElement("p", {
+              className: "text-lg sm:text-xl md:text-2xl text-light-200 max-w-2xl mx-auto mb-10 animate-fade-in-up",
+              style: { animationDelay: '0.4s' }
+            }, "اكتشف مجموعتنا المختارة من الشواحن، السماعات، الكفرات، والمزيد بأفضل الأسعار والجودة."),
+            React.createElement("div", {
+              className: "animate-fade-in-up",
+              style: { animationDelay: '0.6s' }
+            },
+              React.createElement("a", {
+                href: "#products",
+                className: "bg-primary hover:bg-primary-hover text-white font-semibold py-3 px-8 sm:py-4 sm:px-10 rounded-lg text-lg sm:text-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              }, "تسوق الآن")
+            )
+          ),
+          React.createElement("div", { className: "absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-dark-900 to-transparent z-0" }),
+          React.createElement("div", { className: "absolute -bottom-16 -left-16 w-64 h-64 bg-secondary/10 rounded-full filter blur-3xl animate-subtle-pulse" }),
+          React.createElement("div", { className: "absolute -top-16 -right-16 w-72 h-72 bg-primary/10 rounded-full filter blur-3xl animate-subtle-pulse animation-delay-1000" })
+        )
+      );
+    };
+    // --- END Inlined components/HeroSection.tsx ---
+
+    // --- START Inlined components/CategoryTabs.tsx ---
+    const CategoryTabs = ({ categories, selectedCategory, onSelectCategory }) => {
+      return (
+        React.createElement("div", { className: "py-8 sm:py-12 bg-dark-800" },
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8" },
+            React.createElement("h2", { className: "text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 text-light-100" }, "تصفح حسب الفئة"),
+            React.createElement("div", { className: "flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4" },
+              categories.map((category) => (
+                React.createElement("button", {
+                  key: category.id,
+                  onClick: () => onSelectCategory(category.id),
+                  className: "px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-all duration-300 transform hover:scale-105 " +
+                             (selectedCategory === category.id 
+                               ? 'bg-primary text-white shadow-md' 
+                               : 'bg-dark-700 text-light-200 hover:bg-primary/70 hover:text-white')
+                }, category.arabicName)
+              ))
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/CategoryTabs.tsx ---
+
+    // --- START Inlined components/ProductCard.tsx ---
+    const ProductCard = ({ product }) => {
+      return (
+        React.createElement("div", { className: "bg-dark-800 rounded-xl shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-primary/30 hover:transform hover:-translate-y-2 group flex flex-col" },
+          React.createElement("div", { className: "relative" },
+            React.createElement("img", {
+              src: product.imageUrl,
+              alt: product.name,
+              className: "w-full h-56 sm:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+            }),
+            product.isNew && (
+              React.createElement("span", { className: "absolute top-3 right-3 bg-secondary text-white text-xs font-semibold px-2.5 py-1 rounded-full" }, "جديد")
+            ),
+            product.discountPrice && (
+              React.createElement("span", { className: "absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full" }, "خصم!")
+            )
+          ),
+          React.createElement("div", { className: "p-5 flex flex-col flex-grow" },
+            React.createElement("h3", { className: "text-lg sm:text-xl font-semibold text-light-100 mb-2 truncate group-hover:text-primary transition-colors" }, product.arabicName),
+            React.createElement("div", { className: "flex items-center mb-3" },
+              React.createElement(StarRating, { rating: product.rating }),
+              React.createElement("span", { className: "text-xs text-gray-400 mr-2" }, `(${product.reviews} مراجعات)`)
+            ),
+            React.createElement("div", { className: "mb-4 mt-auto" },
+              product.discountPrice ? (
+                React.createElement("div", { className: "flex items-baseline space-x-2 space-x-reverse" },
+                  React.createElement("p", { className: "text-xl sm:text-2xl font-bold text-primary" }, `${product.discountPrice} جم`),
+                  React.createElement("p", { className: "text-sm text-gray-400 line-through" }, `${product.price} جم`)
+                )
+              ) : (
+                React.createElement("p", { className: "text-xl sm:text-2xl font-bold text-primary" }, `${product.price} جم`)
+              )
+            ),
+            React.createElement("button", {
+              className: "w-full bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 space-x-reverse transform opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0"
+            },
+              React.createElement(ShoppingCartIcon, { className: "w-5 h-5" }),
+              React.createElement("span", null, "أضف إلى السلة")
+            ),
+            React.createElement("button", {
+              className: "w-full mt-2 bg-dark-700 hover:bg-secondary text-light-100 font-semibold py-2.5 px-4 rounded-lg transition-all duration-300 md:hidden group-hover:hidden flex items-center justify-center space-x-2 space-x-reverse"
+            },
+              React.createElement(ShoppingCartIcon, { className: "w-5 h-5" }),
+              React.createElement("span", null, "أضف إلى السلة")
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/ProductCard.tsx ---
+
+    // --- START Inlined components/ProductGrid.tsx ---
+    const ProductGrid = ({ products }) => {
+      if (products.length === 0) {
+        return (
+          React.createElement("div", { className: "text-center py-12" },
+            React.createElement("p", { className: "text-xl text-gray-400" }, "لا توجد منتجات تطابق هذا الفلتر.")
+          )
+        );
+      }
+      return (
+        React.createElement("div", { id: "products", className: "py-12 sm:py-16 bg-dark-900" },
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8" },
+            React.createElement("h2", { className: "text-3xl sm:text-4xl font-bold text-center mb-10 sm:mb-12 text-light-100" }, "منتجاتنا المميزة"),
+            React.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8" },
+              products.map((product, index) => (
+                React.createElement("div", {
+                  key: product.id,
+                  className: "animate-fade-in-up",
+                  style: { animationDelay: `${index * 0.1}s` }
+                },
+                  React.createElement(ProductCard, { product: product })
+                )
+              ))
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/ProductGrid.tsx ---
+
+    // --- START Inlined components/PromoBanner.tsx ---
+    const PromoBanner = () => {
+      return (
+        React.createElement("section", { id: "promo", className: "py-16 sm:py-20 bg-gradient-to-r from-primary to-secondary text-white" },
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8 text-center" },
+            React.createElement("h2", { className: "text-3xl sm:text-4xl font-bold mb-4 animate-fade-in-up", style: { animationDelay: '0.2s' } }, "عروض حصرية لا تفوت!"),
+            React.createElement("p", { className: "text-lg sm:text-xl mb-8 max-w-2xl mx-auto animate-fade-in-up", style: { animationDelay: '0.4s' } }, "استفد من خصوماتنا المذهلة على مجموعة مختارة من الاكسسوارات. تسوق الآن ووفر أكثر!"),
+            React.createElement("div", { className: "animate-fade-in-up", style: { animationDelay: '0.6s' } },
+              React.createElement("a", {
+                href: "#products",
+                className: "bg-white text-primary hover:bg-gray-100 font-bold py-3 px-8 sm:py-4 sm:px-10 rounded-lg text-lg sm:text-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              }, "اكتشف العروض")
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/PromoBanner.tsx ---
+
+    // --- START Inlined components/Footer.tsx ---
+    const Footer = () => {
+      const currentYear = new Date().getFullYear();
+      return (
+        React.createElement("footer", { id: "footer", className: "bg-dark-800 text-gray-300 py-12 sm:py-16" },
+          React.createElement("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8" },
+            React.createElement("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8 mb-8" },
+              React.createElement("div", null,
+                React.createElement("h3", { className: "text-xl font-bold text-primary mb-4" }, "اكسسواراتي"),
+                React.createElement("p", { className: "text-sm text-gray-400" }, "متجرك الأول لأفضل اكسسوارات الموبايل والأجهزة الإلكترونية. جودة عالية بأسعار تنافسية.")
+              ),
+              React.createElement("div", null,
+                React.createElement("h4", { className: "text-lg font-semibold text-light-100 mb-4" }, "روابط سريعة"),
+                React.createElement("ul", { className: "space-y-2" },
+                  React.createElement("li", null, React.createElement("a", { href: "#about", className: "hover:text-primary transition-colors" }, "عنا")),
+                  React.createElement("li", null, React.createElement("a", { href: "#products", className: "hover:text-primary transition-colors" }, "المنتجات")),
+                  React.createElement("li", null, React.createElement("a", { href: "#privacy", className: "hover:text-primary transition-colors" }, "سياسة الخصوصية")),
+                  React.createElement("li", null, React.createElement("a", { href: "#terms", className: "hover:text-primary transition-colors" }, "الشروط والأحكام"))
+                )
+              ),
+              React.createElement("div", null,
+                React.createElement("h4", { className: "text-lg font-semibold text-light-100 mb-4" }, "تواصل معنا"),
+                React.createElement("ul", { className: "space-y-2 text-sm" },
+                  React.createElement("li", { className: "text-gray-400" }, "البريد الإلكتروني: info@ اكسسواراتي.com"),
+                  React.createElement("li", { className: "text-gray-400" }, "الهاتف: +20 115 XXX XXXX") // Placeholder phone
+                ),
+                React.createElement("div", { className: "flex space-x-4 mt-4 space-x-reverse" },
+                  React.createElement("a", { href: "#", "aria-label": "Facebook", className: "text-gray-400 hover:text-primary transition-colors" },
+                    React.createElement("svg", { className: "w-6 h-6", fill: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true" }, React.createElement("path", { fillRule: "evenodd", d: "M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z", clipRule: "evenodd" }))
+                  ),
+                  React.createElement("a", { href: "#", "aria-label": "Instagram", className: "text-gray-400 hover:text-primary transition-colors" },
+                    React.createElement("svg", { className: "w-6 h-6", fill: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true" }, React.createElement("path", { fillRule: "evenodd", d: "M12.315 2.014a.825.825 0 01.37.024 10.82 10.82 0 012.498.331c.478.096.94.235 1.384.42l.02.008.024.01c.46.198.896.44 1.3.73l.004.003.025.018a7.088 7.088 0 012.073 2.073l.018.025.003.004c.29.404.532.84.73 1.3l.01.024.008.02c.185.444.324.906.42 1.384a10.82 10.82 0 01.332 2.498.825.825 0 01-.001.689 10.825 10.825 0 01-.33 2.498c-.096.478-.235.94-.42 1.384l-.02.008-.024.01a6.89 6.89 0 01-.73 1.3l-.004.003-.025.018a7.09 7.09 0 01-2.073 2.073l-.018.025-.003.004a6.89 6.89 0 01-1.3.73l-.024.01-.008.02a10.823 10.823 0 01-2.498.332.825.825 0 01-.689-.001 10.827 10.827 0 01-2.498-.33 10.827 10.827 0 01-1.384-.42l-.008-.02-.01-.024a6.89 6.89 0 01-.73-1.3l-.003-.004-.018-.025a7.09 7.09 0 01-2.073-2.073l-.025-.018-.004-.003a6.89 6.89 0 01-.73-1.3l-.01-.024-.02-.008a10.825 10.825 0 01-.42-1.384A10.823 10.823 0 012.014 12.315a.825.825 0 01.024-.37 10.82 10.82 0 01.331-2.498c.096-.478.235-.94.42-1.384l.02-.008.024-.01c.198-.46.44-.896.73-1.3l.004-.003.025-.018A7.088 7.088 0 017.64 3.01l.018-.025.003-.004A6.89 6.89 0 019.015 2.25l.024-.01.008-.02c.444-.185.906-.324 1.384-.42A10.82 10.82 0 0112 .014a.825.825 0 01.315 0zm-1.06 4.013a.75.75 0 100-1.5.75.75 0 000 1.5zM12 6.825A5.175 5.175 0 1012 17.175 5.175 5.175 0 0012 6.825zM4.825 12a7.175 7.175 0 1114.35 0 7.175 7.175 0 01-14.35 0z", clipRule: "evenodd" }))
+                  ),
+                  React.createElement("a", { href: "#", "aria-label": "Twitter", className: "text-gray-400 hover:text-primary transition-colors" },
+                    React.createElement("svg", { className: "w-6 h-6", fill: "currentColor", viewBox: "0 0 24 24", "aria-hidden": "true" }, React.createElement("path", { d: "M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" }))
+                  )
+                )
+              )
+            ),
+            React.createElement("div", { className: "border-t border-dark-700 pt-8 text-center text-sm text-gray-500" },
+              React.createElement("p", null, `© ${currentYear} اكسسواراتي. جميع الحقوق محفوظة.`)
+            )
+          )
+        )
+      );
+    };
+    // --- END Inlined components/Footer.tsx ---
+
+    // --- START Inlined components/WhatsAppFAB.tsx ---
+    const WhatsAppFAB = () => {
+      const WHATSAPP_LINK = "https://api.whatsapp.com/send/?phone=201159478033&text&type=phone_number&app_absent=0&wame_ctl=1";
+
+      return (
+        React.createElement("a", {
+          href: WHATSAPP_LINK,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          "aria-label": "تواصل معنا عبر واتساب",
+          className: "fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[100] bg-[#25D366] hover:bg-[#128C7E] text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 flex items-center justify-center",
+          title: "تواصل معنا عبر واتساب"
+        },
+          React.createElement(WhatsAppIcon, { className: "w-6 h-6 sm:w-7 sm:h-7" })
+        )
+      );
+    };
+    // --- END Inlined components/WhatsAppFAB.tsx ---
+
+    // --- START Inlined App.tsx ---
+    const App = () => {
+      const [products, setProducts] = useState(SAMPLE_PRODUCTS);
+      const [filteredProducts, setFilteredProducts] = useState(SAMPLE_PRODUCTS);
+      const [selectedCategory, setSelectedCategory] = useState(ProductCategory.All);
+
+      useEffect(() => {
+        if (selectedCategory === ProductCategory.All) {
+          setFilteredProducts(products);
+        } else {
+          setFilteredProducts(products.filter(p => p.category === selectedCategory));
+        }
+      }, [selectedCategory, products]);
+
+      const handleSelectCategory = (category) => {
+        setSelectedCategory(category);
+      };
+
+      return (
+        React.createElement("div", { className: "flex flex-col min-h-screen bg-dark-900" },
+          React.createElement(Header, null),
+          React.createElement("main", { className: "flex-grow" },
+            React.createElement(HeroSection, null),
+            React.createElement(CategoryTabs, {
+              categories: CATEGORIES,
+              selectedCategory: selectedCategory,
+              onSelectCategory: handleSelectCategory
+            }),
+            React.createElement(ProductGrid, { products: filteredProducts }),
+            React.createElement(PromoBanner, null)
+          ),
+          React.createElement(Footer, null),
+          React.createElement(WhatsAppFAB, null)
+        )
+      );
+    };
+    // --- END Inlined App.tsx ---
+
+    // --- START Inlined index.tsx (ReactDOM rendering part) ---
+    const rootElement = document.getElementById('root');
+    if (!rootElement) {
+      throw new Error("Could not find root element to mount to");
+    }
+
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      React.createElement(React.StrictMode, null,
+        React.createElement(App, null)
+      )
+    );
+    // --- END Inlined index.tsx ---
+  </script>
+</body>
+</html>
